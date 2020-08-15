@@ -1,4 +1,4 @@
-//Simple Config File.
+//Package config Simple Config File.
 //Copyright (C) 2020 Ron. all rights reserved.
 //Version 1.0
 //Date : 2020-08-09 10:25:00
@@ -15,6 +15,7 @@ import (
 	"strings"
 )
 
+//SimpleConfig - config interface
 type SimpleConfig interface {
 	Get(key string) (string, bool)
 	GetArray(key string) ([]string, bool)
@@ -40,6 +41,7 @@ func (c *config) GetArray(key string) ([]string, bool) {
 	return nil, false
 }
 
+//New - create new config.
 func New(file string) SimpleConfig {
 	f, err := os.Open(file)
 	if err != nil {
@@ -47,12 +49,18 @@ func New(file string) SimpleConfig {
 	}
 	content := make(map[string][]string)
 
-	sc := bufio.NewScanner(f)
-	for sc.Scan() {
-		t := strings.Trim(sc.Text(), " ")
-		if t == "" {
+	rd := bufio.NewReader(f)
+	for {
+		line, _, err := rd.ReadLine()
+		if err != nil {
+			break
+		}
+
+		t := strings.Trim(string(line), " ")
+		if t == "" || strings.HasPrefix(t, "#") {
 			continue
 		}
+
 		arr := strings.Split(t, "=")
 		if len(arr) != 2 {
 			panic("SimpleConfig File Format Error, line not has = ")
