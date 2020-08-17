@@ -11,11 +11,11 @@ import (
 
 func TestConfig(t *testing.T) {
 	c := New("test.conf")
-	_, ok := c.Get("abc")
-	if ok {
+	abc := c.Get("abc", "123")
+	if abc != "123" {
 		t.Fail()
 	}
-	v, _ := c.Get("db.mysql.ip")
+	v := c.Get("db.mysql.ip", "456")
 	if v != "127.0.0.1" {
 		t.FailNow()
 	}
