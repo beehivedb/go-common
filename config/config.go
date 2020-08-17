@@ -34,12 +34,12 @@ func (c *config) Get(key string, value string) string {
 	return value
 }
 
-func (c *config) GetArray(key string) ([]string, bool) {
+func (c *config) GetArray(key string) []string {
 	arr, ok := c.content[key]
 	if ok {
-		return arr, ok
+		return arr
 	}
-	return nil, false
+	return nil
 }
 
 //New - create new config.
