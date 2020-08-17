@@ -17,20 +17,21 @@ import (
 
 //SimpleConfig - config interface
 type SimpleConfig interface {
-	Get(key string) (string, bool)
-	GetArray(key string) ([]string, bool)
+	Get(key string, value string) string
+	GetArray(key string) []string
 }
 
 type config struct {
 	content map[string][]string
 }
 
-func (c *config) Get(key string) (string, bool) {
+//Get - get config by key. if unset then return default.
+func (c *config) Get(key string, value string) string {
 	v, ok := c.content[key]
 	if ok {
-		return v[0], ok
+		return v[0]
 	}
-	return "", false
+	return value
 }
 
 func (c *config) GetArray(key string) ([]string, bool) {
