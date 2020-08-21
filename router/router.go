@@ -6,6 +6,8 @@
 package router
 
 import (
+	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -55,6 +57,51 @@ func (c *context) Body() string {
 	}
 	return ""
 }
+
+//ParseJSON - unmarshal requet body to json.
+func (c *context) ParseJSON(v interface{}) error {
+	if c.request.Body != nil {
+		arr, err := ioutil.ReadAll(c.request.Body)
+		if err != nil {
+			return err
+		}
+		return json.Unmarshal(arr, v)
+	}
+	return errors.New("Request Body Is Empty")
+}
+
+//JSON - Output format json
+func (c *context) JSON(v interface{}) error {
+	arr, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+	_, err = c.writer.Write(arr)
+	return err
+}
+
+//Failed - send failed message.
+func (c *context) Failed(msg string) {
+	c.writer.WriteHeader(http.StatusBadRequest)
+	fmt.Fprint(c.writer, msg)
+}
+
+//Cookie - query cookie.
+func (c *context) Cookie(name string) (*http.Cookie, error) {
+	return c.request.Cookie(name)
+}
+
+//AddCookie - add cookie.
+func (c *context) AddCookie(name string, value string) {
+	k := http.Cookie{
+		Name:  name,
+		Value: value,
+	}
+	c.writer.Header().Set("Set-Cookie", k.String())
+}
+
+//H - shutcut of map.
+type H map[string]interface{}
 
 func (c *context) Method() string {
 	return c.Method()
