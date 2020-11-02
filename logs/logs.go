@@ -117,10 +117,24 @@ func (l *Logger) Trace(v ...interface{}) {
 	}
 }
 
+//Trace - trace level message.
+func (l *Logger) Tracef(ft string, v ...interface{}) {
+	if l.level == lt {
+		logf(l.out, l.prefix, "trace", ft, v...)
+	}
+}
+
 //Trace - Global Trace Message.
 func Trace(v ...interface{}) {
 	if lvl == lt {
 		log(out, px, "trace", v...)
+	}
+}
+
+//Tracef - Global Trace Message.
+func Tracef(ft string, v ...interface{}) {
+	if lvl == lt {
+		logf(out, px, "trace", ft, v...)
 	}
 }
 
@@ -131,10 +145,24 @@ func (l *Logger) Info(v ...interface{}) {
 	}
 }
 
+//Info - info level message.
+func (l *Logger) Infof(ft string, v ...interface{}) {
+	if l.level <= li {
+		logf(l.out, l.prefix, "info", ft, v...)
+	}
+}
+
 //Info - global info level message.
 func Info(v ...interface{}) {
 	if lvl <= li {
 		log(out, px, "info", v...)
+	}
+}
+
+//Info - global info level message.
+func Infof(ft string, v ...interface{}) {
+	if lvl <= li {
+		logf(out, px, "info", ft, v...)
 	}
 }
 
@@ -145,10 +173,24 @@ func (l *Logger) Debug(v ...interface{}) {
 	}
 }
 
+//Debugf - debug message.
+func (l *Logger) Debugf(ft string, v ...interface{}) {
+	if l.level <= ld {
+		logf(l.out, l.prefix, "debug", ft, v...)
+	}
+}
+
 //Debug - global debug message.
 func Debug(v ...interface{}) {
 	if lvl <= ld {
 		log(out, px, "debug", v...)
+	}
+}
+
+//Debugf - global debug message.
+func Debugf(ft string, v ...interface{}) {
+	if lvl <= ld {
+		logf(out, px, "debug", ft, v...)
 	}
 }
 
@@ -159,6 +201,13 @@ func (l *Logger) Error(v ...interface{}) {
 	}
 }
 
+//Errorf - format error message.
+func (l *Logger) Errorf(ft string, v ...interface{}) {
+	if l.level <= le {
+		logf(l.out, l.prefix, "error", ft, v...)
+	}
+}
+
 //Error - global error message.
 func Error(v ...interface{}) {
 	if lvl <= le {
@@ -166,10 +215,25 @@ func Error(v ...interface{}) {
 	}
 }
 
+//Errorf - error format message.
+func Errorf(ft string, v ...interface{}) {
+	if lvl <= le {
+		logf(out, px, "error", ft, v...)
+	}
+}
+
 //Panic - Painc Message.
 func (l *Logger) Panic(v ...interface{}) {
 	if l.level <= lp {
 		msg := fmt.Sprint(v...)
+		panic(msg)
+	}
+}
+
+//Paincf - Painc format message.
+func (l *Logger) Paincf(ft string, v ...interface{}) {
+	if l.level <= lp {
+		msg := fmt.Sprintf(ft, v...)
 		panic(msg)
 	}
 }
@@ -182,10 +246,27 @@ func Panic(v ...interface{}) {
 	}
 }
 
+//Paincf log - format log message.
+func Paincf(ft string, v ...interface{}) {
+	if lvl <= lp {
+		msg := fmt.Sprintf(ft, v...)
+		panic(msg)
+	}
+}
+
 //Fatal - print message then exit.
 func (l *Logger) Fatal(v ...interface{}) {
 	if l.level <= lf {
 		log(l.out, l.prefix, "fatal", v...)
+		os.Exit(1)
+	}
+}
+
+//Fatalf - print format message and exit.
+func (l *Logger) Fatalf(ft string, v ...interface{}) {
+	if l.level <= lf {
+
+		logf(l.out, l.prefix, "fatal", ft, v...)
 		os.Exit(1)
 	}
 }
@@ -197,10 +278,29 @@ func Fatal(v ...interface{}) {
 		os.Exit(1)
 	}
 }
+
+//Fatalf - format log message.
+func Fatalf(fmt string, v ...interface{}) {
+	if lvl <= lf {
+		logf(out, px, "fatal", fmt, v...)
+		os.Exit(1)
+	}
+}
+
 func log(out io.Writer, prefix string, lvl string, v ...interface{}) {
 	_, file, line, _ := runtime.Caller(2)
 	d := time.Now().Format(time.RFC3339)
 	msg := fmt.Sprint(v...)
+	_, err := fmt.Fprintf(out, "%s: %s [%s] %s@%d: %s\n", prefix, d, lvl, path.Base(file), line, msg)
+	if err != nil {
+		panic(err)
+	}
+}
+
+func logf(out io.Writer, prefix string, lvl string, f string, v ...interface{}) {
+	_, file, line, _ := runtime.Caller(2)
+	d := time.Now().Format(time.RFC3339)
+	msg := fmt.Sprintf(f, v...)
 	_, err := fmt.Fprintf(out, "%s: %s [%s] %s@%d: %s\n", prefix, d, lvl, path.Base(file), line, msg)
 	if err != nil {
 		panic(err)
