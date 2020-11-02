@@ -117,7 +117,7 @@ func (l *Logger) Trace(v ...interface{}) {
 	}
 }
 
-//Trace - trace level message.
+//Tracef - trace level message.
 func (l *Logger) Tracef(ft string, v ...interface{}) {
 	if l.level == lt {
 		logf(l.out, l.prefix, "trace", ft, v...)
@@ -145,7 +145,7 @@ func (l *Logger) Info(v ...interface{}) {
 	}
 }
 
-//Info - info level message.
+//Infof - info level message.
 func (l *Logger) Infof(ft string, v ...interface{}) {
 	if l.level <= li {
 		logf(l.out, l.prefix, "info", ft, v...)
@@ -159,7 +159,7 @@ func Info(v ...interface{}) {
 	}
 }
 
-//Info - global info level message.
+//Infof - global info level message.
 func Infof(ft string, v ...interface{}) {
 	if lvl <= li {
 		logf(out, px, "info", ft, v...)
